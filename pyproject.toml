@@ -1,0 +1,26 @@
+[tool.poetry]
+name = "simplelogincmd"
+version = "0.1.0"
+description = "SimpleLogin command-line application"
+authors = ["truthless-dev <truthless.deviant248@simplelogin.fr>"]
+license = "MIT"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+requests = "^2.32.2"
+click = "^8.1.7"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.2.1"
+responses = "^0.25.0"
+black = "^24.4.2"
+Sphinx = "^7.3.7"
+toml = "^0.10.2"
+
+[tool.poetry.scripts]
+simplelogin = "simplelogincmd.cli.main:cli"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
