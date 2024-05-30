@@ -76,5 +76,5 @@ def save(config: ConfigParser, path: Path | None = None) -> bool:
     except OSError:
         # TODO: Add logging / other notification mechanisms.
         return False
-    path.chmod(400)
+    path.chmod(0o600)  # -rw-------
     return True
