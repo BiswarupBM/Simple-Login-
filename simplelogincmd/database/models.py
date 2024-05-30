@@ -232,3 +232,68 @@ class Alias(LenientInit, Object):
         note_like = cls.note.ilike(like_string)
         condition = email_like | note_like
         return query.where(condition)
+
+
+class Contact(LenientInit, Object):
+    """
+    An alias contact
+    """
+
+    __tablename__ = "contact"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    name: Mapped[str] = mapped_column(nullable=True)
+    contact: Mapped[str]
+    reverse_alias: Mapped[str]
+    reverse_alias_address: Mapped[str]
+    block_forward: Mapped[bool]
+    last_email_sent_timestamp: Mapped[int] = mapped_column(nullable=True)
+    creation_timestamp: Mapped[int]
+
+    def __init__(self, **kwargs) -> None:
+        self._lenient_init(**kwargs)
+
+    def __str__(self) -> str:
+        return self.contact  # email address
+
+    @classmethod
+    def identifier_query(cls, query: Select, id: Any) -> Select:
+        like_string = f"%{id}%"
+        email_like = cls.contact.ilike(like_string)
+        return query.where(email_like)
+
+
+class Activity(LenientInit, Object):
+    """
+    An alias activity
+    """
+
+    __tablename__ = "activity"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    action: Mapped[str]
+    sender: Mapped[str]
+    recipient: Mapped[str]
+    reverse_alias: Mapped[str]
+    reverse_alias_address: Mapped[str]
+    timestamp: Mapped[int]
+
+    def __init__(self, **kwargs):
+        # SimpleLogin API sends "from" and "to" keys. Rename these to
+        # avoid problems.
+        if kwargs.get("sender") is None:
+            kwargs["sender"] = kwargs.get("from")
+        if kwargs.get("recipient") is None:
+            kwargs["recipient"] = kwargs.get("to")
+        self._lenient_init(**kwargs)
+
+    def __str__(self) -> str:
+        return self.action
+
+    @classmethod
+    def identifier_query(cls, query: Select, id: Any) -> Select:
+        like_string = f"%{id}%"
+        sender_like = cls.sender.ilike(like_string)
+        recipient_like = cls.recipient.ilike(like_string)
+        condition = sender_like | recipient_like
+        return query.where(condition)
