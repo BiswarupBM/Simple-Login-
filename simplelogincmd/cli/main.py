@@ -20,6 +20,7 @@ def cli(sl):
     \f
     Application entrypoint
     """
+    config.ensure_directory()
     # Silently log in if an API key is saved. If no API key is found,
     # don't prompt for credentials now because user may not be invoking
     # a command that requires authentication anyway. Later prompting
