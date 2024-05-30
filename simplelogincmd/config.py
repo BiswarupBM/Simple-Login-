@@ -18,6 +18,29 @@ def default() -> dict:
     return const.CONFIG_DEFAULT
 
 
+def ensure_directory(path: Path | None = None) -> bool:
+    """
+    Create a config directory if it does not already exist
+
+    :param path: The directory to check, defaults to the application's
+        default config directory
+    :type path: :class:`pathlib.Path`
+
+    :return: Whether the directory now exists
+    :rtype: bool
+    """
+    path = path or const.DIR_APPDATA
+    if path.exists():
+        return True
+    try:
+        path.mkdir(parents=True, exist_ok=True)
+    except OSError:
+        # TODO: Add logging / other notification mechanisms.
+        return False
+    path.chmod(0o755)  # drwxr-xr-x
+    return True
+
+
 def load(path: Path | None = None) -> ConfigParser:
     """
     Read configuration from a config file
@@ -65,10 +88,7 @@ def save(config: ConfigParser, path: Path | None = None) -> bool:
     """
     path = path or const.FILE_CONFIG
     directory = path.parent
-    try:
-        directory.mkdir(parents=True, exist_ok=True)
-    except OSError:
-        # TODO: Add logging / other notification mechanisms.
+    if not ensure_directory(directory):
         return False
     try:
         with path.open("w", encoding="utf-8") as file:
