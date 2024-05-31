@@ -8,9 +8,9 @@ import click
 
 from simplelogincmd.cli.exceptions import NotLoggedInError
 from simplelogincmd.database import DatabaseAccessLayer
+from simplelogincmd.database.models import Object
 from simplelogincmd.rest import SimpleLogin
 from simplelogincmd.rest.exceptions import UnauthenticatedError
-from simplelogincmd.rest.models import Object
 
 
 pass_db_access = click.make_pass_decorator(DatabaseAccessLayer, ensure=True)
@@ -65,7 +65,7 @@ def _generate_model_list(models: list[Object], fields: list[str]):
     header = "|".join(fields)
     yield f"{header}\n"
     for model in models:
-        properties = [model.field_as_string(field) for field in fields]
+        properties = [model.get_string(field) for field in fields]
         entry = "|".join(properties)
         yield f"{entry}\n"
 
@@ -78,7 +78,7 @@ def display_model_list(
     """
     Print a simple table detailing each item to stdout
 
-    :param models: Series of :class:`~simplelogincmd.rest.models.Object` to
+    :param models: Series of :class:`~simplelogincmd.database.models.Object` to
         be included in the output
     :type models: list[Object]
     :param fields: The field names to display for each item, in left-
