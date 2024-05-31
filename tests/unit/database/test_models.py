@@ -3,52 +3,7 @@ import pytest
 from simplelogincmd.database.models import (
     Alias,
     Mailbox,
-    Object,
 )
-
-
-@pytest.fixture
-def mailbox():
-    return Mailbox(
-        id=1,
-        email="test@site.com",
-        nb_alias=0,
-        verified=True,
-        default=False,
-        creation_timestamp=1,
-    )
-
-
-@pytest.fixture
-def alias():
-    return Alias(
-        id=1,
-        email="alias@sl.com",
-        note="testing",
-        nb_block=0,
-        nb_forward=1,
-        nb_reply=0,
-        enabled=True,
-        support_pgp=True,
-        disable_pgp=False,
-        pinned=False,
-        creation_timestamp=1,
-    )
-
-
-@pytest.fixture
-def complex_mailbox():
-    mb = Mailbox(
-        id=2,
-        email="more@tests.io",
-        nb_alias=5,
-        verified=True,
-        default=False,
-        creation_timestamp=123,
-    )
-    setattr(mb, "list_attr", [1, 2, 3])
-    setattr(mb, "dict_attr", {"key": "value"})
-    return mb
 
 
 def test_init_accepts_extra_arguments():
@@ -77,17 +32,6 @@ class TestFieldGetters:
 
     def test_get_undefined_field_as_string_is_empty_string(self, mailbox):
         assert mailbox.get_string("faketestfield") == ""
-
-
-@pytest.fixture
-def ready_db(db_access):
-    db_access.initialize()
-
-
-@pytest.fixture
-def populated_db(ready_db, db_access, alias, mailbox, complex_mailbox):
-    db_access.session.add_all([alias, mailbox, complex_mailbox])
-    db_access.session.commit()
 
 
 @pytest.mark.usefixtures("populated_db")
