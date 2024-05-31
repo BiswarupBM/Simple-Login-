@@ -7,11 +7,13 @@ from functools import wraps
 import click
 
 from simplelogincmd.cli.exceptions import NotLoggedInError
+from simplelogincmd.database import DatabaseAccessLayer
 from simplelogincmd.rest import SimpleLogin
 from simplelogincmd.rest.exceptions import UnauthenticatedError
 from simplelogincmd.rest.models import Object
 
 
+pass_db_access = click.make_pass_decorator(DatabaseAccessLayer, ensure=True)
 pass_simplelogin = click.make_pass_decorator(SimpleLogin, ensure=True)
 
 

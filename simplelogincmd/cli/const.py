@@ -267,6 +267,18 @@ HELP = NS(
             ),
         ),
     ),
+    DATABASE=NS(
+        SHORT=None,
+        LONG="Manage the local database",
+        SYNC=NS(
+            SHORT="Synchronize the DB",
+            LONG="Synchronize the local database with that of SimpleLogin",
+            EPILOG="Note that this command will wipe any data "
+            "currently stored in your local database. This should "
+            "not matter to most people, so no confirmation is "
+            "required.",
+        ),
+    ),
     MAILBOX=NS(
         SHORT=None,
         LONG="CRUD operations on your mailboxes",

@@ -4,7 +4,7 @@ Manage requests and responses to the SimpleLogin API
 
 from simplelogincmd.rest import const, util
 from simplelogincmd.rest.client import Client
-from simplelogincmd.rest.models import (
+from simplelogincmd.database.models import (
     Activity,
     Alias,
     Contact,
