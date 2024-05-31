@@ -119,3 +119,18 @@ class DatabaseAccessLayer:
                 # about writing to a read-only database can occur.
                 self.engine.dispose()
         return True
+
+    def clear(self) -> bool:
+        """
+        Drop and re-initialize the database
+
+        Simple helper that calls :meth:`.destroy` and then, if that
+        succeeds, "meth"`.initialize`.
+
+        :return: Whether the entire process of destruction and
+            re-initialization succeeds
+        :rtype: bool
+        """
+        if self.destroy():
+            return self.initialize()
+        return False
