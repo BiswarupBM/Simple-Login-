@@ -19,6 +19,7 @@ from sqlalchemy_utils import (
 
 from simplelogincmd import const
 from simplelogincmd.database.models import Object
+from simplelogincmd.database.session import SimpleLoginSession
 
 
 def _create_engine():
@@ -69,7 +70,7 @@ class DatabaseAccessLayer:
         if declarative_base is None:
             declarative_base = Object
         if session_cls is None:
-            session_cls = Session
+            session_cls = SimpleLoginSession
         self.engine = engine
         self.base = declarative_base
         self.session = session_cls(self.engine)
