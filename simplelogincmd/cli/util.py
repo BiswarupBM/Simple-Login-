@@ -3,6 +3,7 @@ CLI application utilities
 """
 
 from functools import wraps
+from typing import Any, Type
 
 import click
 
@@ -195,3 +196,37 @@ def prompt_choice(text: str, options: list) -> int:
     text = f"\n{text} ({low}-{high})"
     choice = click.prompt(text, type=int_range, show_choices=True)
     return choice - 1
+
+
+def resolve_id(db: DatabaseAccessLayer, model_cls: Type, id: Any) -> int | Any:
+    """
+    Search for a single db object id given an identifier
+
+    Call the model classes :meth:`~Object.resolve_identifier` method to
+    locate db objects based on the given identifier, which can be any
+    value. If multiple results match, ask the user to choose one and
+    return the id of the selected object. If one result matches, return
+    its id directly. If no matches were found, return the id as it was
+    provided.
+
+    :param db: The access layer instance to use for the lookup
+    :type db: :class:`~simplelogincmd.database.DatabaseAccessLayer`
+    :param model_cls: The type of db object for which to search
+    :type model_cls: Type, subclass of
+        :class:`~simplelogincmd.database.models.Object`
+    :param id: The id to look up
+    :type id: Any, usually int or str, as defined by the model class's
+        :meth:`~simplelogincmd.database.models.Object.identifier_query`
+
+    :return: The numeric id of the matched object, or the given id if
+        none matched
+    :rtype: int | type(id)
+    """
+    results = model_cls.resolve_identifier(db.session, id)
+    count = len(results)
+    if count == 0:
+        return id
+    if count == 1:
+        return results[0].id
+    choice = prompt_choice(f"Select {model_cls.__name__}", results)
+    return results[choice].id
