@@ -59,6 +59,9 @@ class Object(DeclarativeBase):
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}({self.id})"
 
+    def __eq__(self, other) -> bool:
+        return type(self) is type(other) and self.id == other.id
+
     @classmethod
     def identifier_query(cls, query: Select, id: Any) -> Select:
         """

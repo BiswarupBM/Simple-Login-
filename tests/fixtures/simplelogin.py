@@ -256,15 +256,16 @@ def sl_alias_toggle_denial():
 
 @pytest.fixture
 def sl_activity_a():
-    return dict(
-        id=None,
-        action="reply",
-        timestamp=1580903760,
-        from_="yes_meo_chat@sl.local",
-        to_="marketing@example.com",
-        reverse_alias='"marketing at example.com" <reply@a.b>',
-        reverse_alias_address="reply@a.b",
-    )
+    # Quote keys so that Python doesn't complain about "from".
+    return {
+        "id": None,
+        "action": "reply",
+        "timestamp": 1580903760,
+        "from": "yes_meo_chat@sl.local",
+        "to": "marketing@example.com",
+        "reverse_alias": '"marketing at example.com" <reply@a.b>',
+        "reverse_alias_address": "reply@a.b",
+    }
 
 
 @pytest.fixture

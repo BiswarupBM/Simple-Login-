@@ -2,7 +2,12 @@ import pytest
 import responses
 
 from simplelogincmd.rest.exceptions import UnauthenticatedError
-from simplelogincmd.rest.models import Activity, Alias, Contact, Mailbox
+from simplelogincmd.database.models import (
+    Activity,
+    Alias,
+    Contact,
+    Mailbox,
+)
 
 
 class TestAccountEndpoints:
@@ -240,8 +245,7 @@ class TestAliasEndpoints:
         responses.add(resp_alias_activities_list)
         activities = sl.get_alias_activities(alias_id=sl_alias_a["id"])
         assert len(activities) > 0
-        # Compare __dict__ because Activities have no id.
-        assert activities[0].__dict__ == sl_activity_a
+        assert activities[0] == Activity(**sl_activity_a)
 
     @responses.activate
     def test_update_valid_id_is_successful(
