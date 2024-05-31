@@ -14,13 +14,15 @@ from simplelogincmd.cli import commands, const, util
     context_settings=const.CONTEXT_SETTINGS,
 )
 @click.version_option()
+@util.pass_db_access
 @util.pass_simplelogin
-def cli(sl):
+def cli(sl, db):
     """
     \f
     Application entrypoint
     """
     config.ensure_directory()
+    db.initialize()
     # Silently log in if an API key is saved. If no API key is found,
     # don't prompt for credentials now because user may not be invoking
     # a command that requires authentication anyway. Later prompting
