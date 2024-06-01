@@ -22,9 +22,25 @@ Sphinx = "^7.3.7"
 toml = "^0.10.2"
 flake8 = "^7.0.0"
 pre-commit = "^3.7.1"
+isort = "^5.13.2"
 
 [tool.poetry.scripts]
 simplelogin = "simplelogincmd.cli.main:cli"
+
+[tool.isort]
+profile = "black"
+atomic = true
+honor_noqa = true
+include_trailing_comma = true
+line_length = 88
+lines_after_imports = 2
+multi_line_output = 1
+only_modified = true
+remove_redundant_aliases = true
+skip_gitignore = true
+split_on_trailing_comma = true
+star_first = true
+use_parentheses = true
 
 [build-system]
 requires = ["poetry-core"]
