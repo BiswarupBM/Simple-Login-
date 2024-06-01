@@ -280,6 +280,10 @@ HELP = NS(
     DATABASE=NS(
         SHORT=None,
         LONG="Manage the local database",
+        DELETE=NS(
+            SHORT=None,
+            LONG="Delete the db",
+        ),
         SYNC=NS(
             SHORT="Synchronize the DB",
             LONG="Synchronize the local database with that of SimpleLogin",

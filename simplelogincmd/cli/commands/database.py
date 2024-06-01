@@ -48,3 +48,17 @@ def sync(sl, db):
     click.echo("Done")
     click.echo("")
     click.echo("Local database synced successfully.")
+
+
+@group_db.command(
+    "delete",
+    short_help=const.HELP.DATABASE.DELETE.SHORT,
+    help=const.HELP.DATABASE.DELETE.LONG,
+)
+@util.pass_db_access
+def delete(db) -> bool:
+    """Delete the database"""
+    if not db.destroy():
+        click.echo("Failed to delete database.")
+        return False
+    return True
