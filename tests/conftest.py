@@ -22,6 +22,33 @@ for finder, name, is_pkg in iter_modules(
     globals().update({k: v for k, v in vars(module).items() if not k.startswith("_")})
 
 
+@pytest.fixture(scope="session")
+def monkey():
+    """
+    Permit monkeypatching in fixtures with scope broader than function
+    """
+    with pytest.MonkeyPatch.context() as mp:
+        yield mp
+
+
+@pytest.fixture
+def tmp_appdata_dir(tmp_path_factory):
+    """
+    Create a top-level appdata-type directory like ~/.config/
+    """
+    return tmp_path_factory.mktemp("appdata")
+
+
+@pytest.fixture
+def tmp_app_dir(tmp_appdata_dir):
+    """
+    Construct a path to app's directory like ~/.config/simplelogin-cli/
+
+    Note that the actual directory is not created with this fixture.
+    """
+    return tmp_appdata_dir / "simplelogin-cli"
+
+
 @pytest.fixture
 def sl_unauthenticated():
     return SimpleLogin()

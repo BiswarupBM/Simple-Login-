@@ -64,6 +64,16 @@ MAILBOX_FIELD_ORDER = (
 
 
 # Help texts common to multiple commands/options
+_HELP_ALIAS_ID = (
+    "`ID` can be the alias's numeric id or, if you have a local data"
+    "base, either its email address or note. In the latter cases, if "
+    "more than one alias matches, you will be prompted to choose one."
+)
+_HELP_MAILBOX_ID = (
+    "`ID` can be the mailbox's numeric id or, if you have a local data"
+    "base, its email address. In the latter case, if more than one "
+    "mailbox matches, you will be prompted to choose one."
+)
 _HELP_OPTION_NOTE = (
     "Attach a note to the item. Setting this switch with"
     "out providing any value will open an editor in which you can enter "
@@ -134,7 +144,7 @@ HELP = NS(
         LONG="CRUD operations on your aliases",
         ACTIVITY=NS(
             SHORT="List alias activity",
-            LONG="List activity for the alias with the given `ID`",
+            LONG=f"List activity for the alias with the given ID. {_HELP_ALIAS_ID}",
             EPILOG=_HELP_LIST_EPILOG.format(
                 field1=ACTIVITY_FIELD_ORDER[0],
                 field2=ACTIVITY_FIELD_ORDER[1],
@@ -151,7 +161,7 @@ HELP = NS(
             LONG="CRUD operations on alias contacts",
             CREATE=NS(
                 SHORT="Create a new contact",
-                LONG="Add a contact to the alias with the given `ID`",
+                LONG=f"Add a contact to the alias with the given ID`. {_HELP_ALIAS_ID}",
                 OPTION=NS(
                     EMAIL="The contact's email address",
                 ),
@@ -197,14 +207,14 @@ HELP = NS(
         ),
         DELETE=NS(
             SHORT="Delete an alias",
-            LONG="Delete the alias with the given `ID`",
+            LONG=f"Delete the alias with the given ID. {_HELP_ALIAS_ID}",
             OPTION=NS(
                 YES="Bypass the confirmation prompt",
             ),
         ),
         GET=NS(
             SHORT="View a specific alias",
-            LONG="View the alias with the given `ID`",
+            LONG=f"View the alias with the given ID. {_HELP_ALIAS_ID}",
             EPILOG=_HELP_LIST_EPILOG.format(
                 field1=ALIAS_FIELD_ORDER[0],
                 field2=ALIAS_FIELD_ORDER[1],
@@ -250,11 +260,11 @@ HELP = NS(
         ),
         TOGGLE=NS(
             SHORT="Enable or disable an alias",
-            LONG="Enable or disable the aliase with the given `id`, ",
+            LONG=f"Enable or disable the aliase with the given ID. {_HELP_ALIAS_ID}",
         ),
         UPDATE=NS(
             SHORT="Modify an existing alias",
-            LONG="Modify the alias with the given `ID`",
+            LONG=f"Modify the alias with the given ID. {_HELP_ALIAS_ID}",
             OPTION=NS(
                 NOTE=_HELP_OPTION_NOTE,
                 NAME="The name that will appear as the user of the alias",
@@ -265,6 +275,22 @@ HELP = NS(
                 DISABLE_PGP="Whether to disable PGP",
                 PINNED="Whether to pin the alias",
             ),
+        ),
+    ),
+    DATABASE=NS(
+        SHORT=None,
+        LONG="Manage the local database",
+        DELETE=NS(
+            SHORT=None,
+            LONG="Delete the db",
+        ),
+        SYNC=NS(
+            SHORT="Synchronize the DB",
+            LONG="Synchronize the local database with that of SimpleLogin",
+            EPILOG="Note that this command will wipe any data "
+            "currently stored in your local database. This should "
+            "not matter to most people, so no confirmation is "
+            "required.",
         ),
     ),
     MAILBOX=NS(
@@ -282,8 +308,8 @@ HELP = NS(
         ),
         DELETE=NS(
             SHORT="Delete an existing mailbox",
-            LONG="Delete the mailbox with the given `ID`, optionally "
-            "transferring all its aliases to another mailbox",
+            LONG="Delete the mailbox with the given ID, optionally "
+            f"transferring all its aliases to another mailbox. {_HELP_MAILBOX_ID}",
             EPILOG="Note that SimpleLogin does not currently support " "this command.",
             OPTION=NS(
                 TRANSFER_ALIASES_TO="The ID of the mailbox which is "
@@ -313,7 +339,7 @@ HELP = NS(
         ),
         UPDATE=NS(
             SHORT="Update a mailbox's attributes",
-            LONG="Modify the mailbox with the given `ID`",
+            LONG=f"Modify the mailbox with the given ID. {_HELP_MAILBOX_ID}",
             OPTION=NS(
                 EMAIL="A new email address to assign to this mailbox",
                 DEFAULT="Whether to make this the default mailbox",

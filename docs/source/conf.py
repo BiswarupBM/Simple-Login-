@@ -41,9 +41,16 @@ release = _poetry["version"]
 extensions = [
     "sphinx.ext.autodoc",
     "sphinx.ext.autosummary",
+    "sphinx.ext.intersphinx",
 ]
 
 
+intersphinx_mapping = dict(
+    sqlalchemy=(
+        "https://docs.sqlalchemy.org",
+        "https://docs.sqlalchemy.org/en/20/objects.inv",
+    ),
+)
 autosummary_generate = True
 autoclass_content = "both"  # Add __init__ doc (ie. params) to class summaries
 html_show_sourcelink = False  # Remove links to HTML source

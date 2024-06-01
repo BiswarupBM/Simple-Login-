@@ -4,9 +4,12 @@ alias update
 .. code-block:: console
 
    Usage: simplelogin alias update [OPTIONS] ID
-   
-     Modify the alias with the given `ID`
-   
+
+     Modify the alias with the given ID. `ID` can be the alias's numeric id or,
+     if you have a local database, either its email address or note. In the
+     latter cases, if more than one alias matches, you will be prompted to choose
+     one.
+
    Options:
      -n, --note TEXT                 Attach a note to the item. Setting this
                                      switch without providing any value will open
@@ -21,4 +24,4 @@ alias update
      -d, --disable-pgp / -D, --no-disable-pgp
                                      Whether to disable PGP
      -p, --pinned / -P, --no-pinned  Whether to pin the alias
-     -h, --help                      Show this message and exit.
+        -h, --help                      Show this message and exit.
