@@ -6,9 +6,9 @@ import os
 from typing import Type
 
 from sqlalchemy import (
-    create_engine,
-    Engine,
     URL,
+    Engine,
+    create_engine,
 )
 from sqlalchemy.orm import Session
 from sqlalchemy_utils import (

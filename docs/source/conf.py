@@ -19,7 +19,7 @@ import toml
 _root = os.path.abspath(os.path.join("..", ".."))
 sys.path.insert(0, _root)
 
-import simplelogincmd
+import simplelogincmd  # noqa: E402, F401
 
 
 _file_pyproject = os.path.join(_root, "pyproject.toml")

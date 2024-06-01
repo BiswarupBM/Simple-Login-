@@ -14,7 +14,7 @@ assuming the following.
   the top-level group with all the sub-subgroups.
 
 In other words:
-To create a new command, define it as a public Click group in a module 
+To create a new command, define it as a public Click group in a module
 in this package. It will be imported and added automatically. If it
 should have subgroups itself, define them as private in the same
 module and add them to one of the module's public groups.
