@@ -2,14 +2,14 @@
 Manage requests and responses to the SimpleLogin API
 """
 
-from simplelogincmd.rest import const, util
-from simplelogincmd.rest.client import Client
 from simplelogincmd.database.models import (
     Activity,
     Alias,
     Contact,
     Mailbox,
 )
+from simplelogincmd.rest import const, util
+from simplelogincmd.rest.client import Client
 
 
 class SimpleLogin:

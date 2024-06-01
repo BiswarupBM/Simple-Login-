@@ -1,13 +1,13 @@
 import pytest
 import responses
 
-from simplelogincmd.rest.exceptions import UnauthenticatedError
 from simplelogincmd.database.models import (
     Activity,
     Alias,
     Contact,
     Mailbox,
 )
+from simplelogincmd.rest.exceptions import UnauthenticatedError
 
 
 class TestAccountEndpoints:

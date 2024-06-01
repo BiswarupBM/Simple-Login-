@@ -5,16 +5,16 @@ SimpleLogin object models
 from typing import Any
 
 from sqlalchemy import (
+    Select,
     inspect,
     select,
-    Select,
 )
 from sqlalchemy.exc import InvalidRequestError
 from sqlalchemy.orm import (
     DeclarativeBase,
     Mapped,
-    mapped_column,
     Session,
+    mapped_column,
 )
 
 

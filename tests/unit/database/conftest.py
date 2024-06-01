@@ -1,5 +1,5 @@
 import pytest
-from sqlalchemy import create_engine, URL
+from sqlalchemy import URL, create_engine
 
 from simplelogincmd.database.access_layer import DatabaseAccessLayer
 from simplelogincmd.database.models import (

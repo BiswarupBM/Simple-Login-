@@ -2,9 +2,10 @@
 CLI entrypoint
 """
 
-import click
 import importlib.util
 from pkgutil import iter_modules
+
+import click
 
 from simplelogincmd import config
 from simplelogincmd.cli import commands, const, util
