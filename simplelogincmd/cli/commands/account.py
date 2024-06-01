@@ -115,8 +115,7 @@ def mfa(sl, mfa_token: str, mfa_key: str) -> bool:
 )
 @util.pass_simplelogin
 @util.authenticate
-def logout(sl) -> None:
+def logout(sl) -> bool:
     """Log out of SimpleLogin"""
     success = sl.logout()
-    if success:
-        click.echo("logged out")
+    return success and _save_api_key("")
