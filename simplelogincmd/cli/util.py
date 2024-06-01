@@ -11,7 +11,6 @@ from simplelogincmd.cli.exceptions import NotLoggedInError
 from simplelogincmd.database import DatabaseAccessLayer
 from simplelogincmd.database.models import Object
 from simplelogincmd.rest import SimpleLogin
-from simplelogincmd.rest.exceptions import UnauthenticatedError
 
 
 pass_db_access = click.make_pass_decorator(DatabaseAccessLayer, ensure=True)

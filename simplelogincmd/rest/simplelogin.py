@@ -236,7 +236,9 @@ class SimpleLogin:
         body = dict(
             transfer_aliases_to=transfer_aliases_to,
         )
-        success, json = self.client.delete(endpoint, params=params, headers=headers)
+        success, json = self.client.delete(
+            endpoint, params=params, json=body, headers=headers
+        )
         if not success:
             return success, json.get("error", "Mailbox deletion failed")
         return success, None

@@ -222,7 +222,7 @@ class Alias(LenientInit, Object):
         # to the user.
         # This will never cause problems for SQLAlchemy because it loads
         # objects from the DB via a different method.
-        if (mailboxes := kwargs.get("mailboxes")) is not None:
+        if (mailboxes := extras.get("mailboxes")) is not None:
             self.mailboxes = [Mailbox(**mailbox) for mailbox in mailboxes]
 
     def __str__(self) -> str:

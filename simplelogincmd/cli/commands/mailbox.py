@@ -15,6 +15,21 @@ from simplelogincmd.cli import const, util
 from simplelogincmd.database.models import Mailbox
 
 
+def _mailbox_sort_key(mailbox: Mailbox) -> tuple[int, str]:
+    """
+    Provide a sorting key for mailbox lists
+
+    Sorts using the key will sort first by `nb_alias` descending, and then
+    by `email` ascending.
+
+    :param mailbox: The Mailbox to be sorted
+    :type Mailbox: :class:`~simplelogincmd.database.models.Mailbox`
+
+    :rtype: tuple[int, str]
+    """
+    return (mailbox.nb_alias * -1, mailbox.email)
+
+
 @click.group(
     "mailbox", short_help=const.HELP.MAILBOX.SHORT, help=const.HELP.MAILBOX.LONG
 )
@@ -117,9 +132,7 @@ def list(sl, db, include: str, exclude: str) -> None:
     mailboxes = sl.get_mailboxes()
     if len(mailboxes) == 0:
         return
-    # Sort by `nb_alias` descending, then by `email` ascending.
-    sort_keys = lambda mailbox: (mailbox.nb_alias * -1, mailbox.email)
-    mailboxes.sort(key=sort_keys)
+    mailboxes.sort(key=_mailbox_sort_key)
     for mailbox in mailboxes:
         db.session.upsert(mailbox)
     db.session.commit()
@@ -164,7 +177,7 @@ def update(
 ) -> bool:
     """Modify a mailbox's attributes"""
     id = util.resolve_id(db, Mailbox, id)
-    success, msg = sl.update_mailbox(id, email, default, Cancel_email_change)
+    success, msg = sl.update_mailbox(id, email, default, cancel_email_change)
     if not success:
         click.echo(msg)
         return False
