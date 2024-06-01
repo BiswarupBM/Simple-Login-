@@ -206,6 +206,8 @@ def custom(
     if not success:
         click.echo(obj)
         return False
+    db.session.upsert(obj)
+    db.session.commit()
     click.echo(obj.email)
     return True
 
@@ -243,6 +245,8 @@ def get(sl, db, id: int, include: str | None, exclude: str | None) -> None:
     if not success:
         click.echo(obj)
         return None
+    db.session.upsert(obj)
+    db.session.commit()
     util.display_model_list([obj], fields, use_pager=False)
 
 
@@ -323,8 +327,9 @@ def delete(sl, db, id: int, bypass_confirmation: bool) -> bool:
     flag_value="disabled",
     help=const.HELP.ALIAS.LIST.OPTION.DISABLED,
 )
+@util.pass_db_access
 @util.pass_simplelogin
-def list(sl, include: str | None, exclude: str | None, query: str | None) -> None:
+def list(sl, db, include: str | None, exclude: str | None, query: str | None) -> None:
     """Display aliases in a tabular format"""
     fields = util.get_display_fields_from_options(
         const.ALIAS_FIELD_ORDER, include, exclude
@@ -335,6 +340,9 @@ def list(sl, include: str | None, exclude: str | None, query: str | None) -> Non
     if len(aliases) == 0:
         click.echo("No aliases found.")
         return
+    for alias in aliases:
+        db.session.upsert(alias)
+    db.session.commit()
     util.display_model_list(aliases, fields)
 
 
@@ -370,10 +378,12 @@ def list(sl, include: str | None, exclude: str | None, query: str | None) -> Non
     flag_value="_EDIT",
     help=const.HELP.ALIAS.RANDOM.OPTION.NOTE,
 )
+@util.pass_db_access
 @util.pass_simplelogin
 @util.authenticate
 def random(
     sl,
+    db,
     hostname: str | None,
     mode: str | None,
     note: str | None,
@@ -385,6 +395,8 @@ def random(
     if not success:
         click.echo(obj)
         return False
+    db.session.upsert(obj)
+    db.session.commit()
     click.echo(obj.email)
     return True
 
@@ -518,6 +530,8 @@ def contact_create(sl, db, id: int, email: str) -> bool:
     if not success:
         click.echo(obj)
         return False
+    db.session.upsert(obj)
+    db.session.commit()
     click.echo(obj.reverse_alias_address)
     return True
 
@@ -556,6 +570,9 @@ def contact_list(sl, db, id: int, include: str | None, exclude: str | None) -> N
     if len(contacts) == 0:
         click.echo("No contacts found")
         return
+    for contact in contacts:
+        db.session.upsert(contact)
+    db.session.commit()
     util.display_model_list(contacts, fields)
 
 

@@ -105,8 +105,9 @@ def delete(sl, db, id: int, transfer_aliases_to: int, bypass_confirm: bool):
     "--exclude",
     help=const.HELP.MAILBOX.LIST.OPTION.EXCLUDE,
 )
+@util.pass_db_access
 @util.pass_simplelogin
-def list(sl, include: str, exclude: str) -> None:
+def list(sl, db, include: str, exclude: str) -> None:
     """Display mailboxes in a tabular format"""
     fields = util.get_display_fields_from_options(
         const.MAILBOX_FIELD_ORDER, include, exclude
@@ -119,6 +120,9 @@ def list(sl, include: str, exclude: str) -> None:
     # Sort by `nb_alias` descending, then by `email` ascending.
     sort_keys = lambda mailbox: (mailbox.nb_alias * -1, mailbox.email)
     mailboxes.sort(key=sort_keys)
+    for mailbox in mailboxes:
+        db.session.upsert(mailbox)
+    db.session.commit()
     util.display_model_list(mailboxes, fields)
 
 
