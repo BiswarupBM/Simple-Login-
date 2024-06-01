@@ -21,6 +21,7 @@ black = "^24.4.2"
 Sphinx = "^7.3.7"
 toml = "^0.10.2"
 flake8 = "^7.0.0"
+pre-commit = "^3.7.1"
 
 [tool.poetry.scripts]
 simplelogin = "simplelogincmd.cli.main:cli"
