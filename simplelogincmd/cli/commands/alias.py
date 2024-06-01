@@ -19,6 +19,10 @@ Subcommands:
 import click
 
 from simplelogincmd.cli import const, util
+from simplelogincmd.database.models import (
+    Alias,
+    Mailbox,
+)
 
 
 @click.group(
@@ -41,7 +45,6 @@ def alias(sl):
 )
 @click.argument(
     "id",
-    type=int,
 )
 @click.option(
     "-i",
@@ -53,15 +56,17 @@ def alias(sl):
     "--exclude",
     help=const.HELP.ALIAS.ACTIVITY.OPTION.EXCLUDE,
 )
+@util.pass_db_access
 @util.pass_simplelogin
 @util.authenticate
-def activity(sl, id: int, include: str | None, exclude: str | None) -> None:
+def activity(sl, db, id: int, include: str | None, exclude: str | None) -> None:
     """Display alias activities in a tabular format"""
     fields = util.get_display_fields_from_options(
         const.ACTIVITY_FIELD_ORDER, include, exclude
     )
     if len(fields) == 0:
         return
+    id = util.resolve_id(db, Alias, id)
     activities = sl.get_all_alias_activities(id)
     if len(activities) == 0:
         click.echo("No activities found")
@@ -119,10 +124,12 @@ def activity(sl, id: int, include: str | None, exclude: str | None) -> None:
     default=False,
     help=const.HELP.ALIAS.CUSTOM.OPTION.YES,
 )
+@util.pass_db_access
 @util.pass_simplelogin
 @util.authenticate
 def custom(
     sl,
+    db,
     hostname: str | None,
     prefix: str,
     mailboxes: tuple[str],
@@ -151,22 +158,9 @@ def custom(
         if not bypass_confirmation:
             click.confirm("Create a new alias anyway?", abort=True)
 
+    mailbox_ids = {util.resolve_id(db, Mailbox, mb_id) for mb_id in mailboxes}
     if note == "_EDIT":
         note = util.edit()
-
-    # Get the user's mailboxes and check them against the ids/addresses
-    # they provided. This allows us to accept addresses as well as ids,
-    # and to fail early if no valid mailboxes match.
-    mailbox_ids = set()
-    actual_mailboxes = sl.get_mailboxes()
-    for mailbox in actual_mailboxes:
-        id = mailbox.field_as_string("id")
-        email = mailbox.email
-        if id in mailboxes or email in mailboxes:
-            mailbox_ids.add(mailbox.id)
-    if len(mailbox_ids) == 0:
-        click.echo("Invalid mailbox list")
-        return False
 
     # If `select_suffix` is not set or out of range, prompt the user
     # for which suffix to use.
@@ -223,7 +217,6 @@ def custom(
 )
 @click.argument(
     "id",
-    type=int,
 )
 @click.option(
     "-i",
@@ -235,15 +228,17 @@ def custom(
     "--exclude",
     help=const.HELP.ALIAS.GET.OPTION.EXCLUDE,
 )
+@util.pass_db_access
 @util.pass_simplelogin
 @util.authenticate
-def get(sl, id: int, include: str | None, exclude: str | None) -> None:
+def get(sl, db, id: int, include: str | None, exclude: str | None) -> None:
     """Display a single alias in a tabular format"""
     fields = util.get_display_fields_from_options(
         const.ALIAS_FIELD_ORDER, include, exclude
     )
     if len(fields) == 0:
         return
+    id = util.resolve_id(db, Alias, id)
     success, obj = sl.get_alias(id)
     if not success:
         click.echo(obj)
@@ -258,7 +253,6 @@ def get(sl, id: int, include: str | None, exclude: str | None) -> None:
 )
 @click.argument(
     "id",
-    type=int,
 )
 @click.option(
     "-y",
@@ -269,10 +263,12 @@ def get(sl, id: int, include: str | None, exclude: str | None) -> None:
     default=False,
     help=const.HELP.ALIAS.DELETE.OPTION.YES,
 )
+@util.pass_db_access
 @util.pass_simplelogin
 @util.authenticate
-def delete(sl, id: int, bypass_confirmation: bool) -> bool:
+def delete(sl, db, id: int, bypass_confirmation: bool) -> bool:
     """Delete an alias"""
+    id = util.resolve_id(db, Alias, id)
     if not bypass_confirmation:
         success, obj = sl.get_alias(id)
         if not success:
@@ -400,12 +396,13 @@ def random(
 )
 @click.argument(
     "id",
-    type=int,
 )
+@util.pass_db_access
 @util.pass_simplelogin
 @util.authenticate
-def toggle(sl, id: int) -> bool:
+def toggle(sl, db, id: int) -> bool:
     """Enable or disable an alias"""
+    id = util.resolve_id(db, Alias, id)
     success, result = sl.toggle_alias(id)
     if not success:
         click.echo(result)
@@ -421,7 +418,6 @@ def toggle(sl, id: int) -> bool:
 )
 @click.argument(
     "id",
-    type=int,
 )
 @click.option(
     "-n",
@@ -455,10 +451,12 @@ def toggle(sl, id: int) -> bool:
     default=None,
     help=const.HELP.ALIAS.UPDATE.OPTION.PINNED,
 )
+@util.pass_db_access
 @util.pass_simplelogin
 @util.authenticate
 def update(
     sl,
+    db,
     id: int,
     note: str | None,
     name: str | None,
@@ -467,20 +465,8 @@ def update(
     pinned: bool | None,
 ) -> bool:
     """Modify an alias's fields"""
-    # Get the user's mailboxes and check them against the ids/addresses
-    # they provided. This allows us to accept addresses as well as ids,
-    # and to fail early if no valid mailboxes match.
-    mailbox_ids = set()
-    actual_mailboxes = sl.get_mailboxes()
-    for mailbox in actual_mailboxes:
-        id = mailbox.field_as_string("id")
-        email = mailbox.email
-        if id in mailboxes or email in mailboxes:
-            mailbox_ids.add(mailbox.id)
-    if len(mailbox_ids) == 0:
-        click.echo("Invalid mailbox list")
-        return False
-
+    id = util.resolve_id(db, Alias, id)
+    mailbox_ids = {util.resolve_id(db, Mailbox, mb_id) for mb_id in mailboxes}
     if note == "_EDIT":
         note = util.edit()
     success, msg = sl.update_alias(
@@ -516,17 +502,18 @@ def _contact(sl):
 )
 @click.argument(
     "id",
-    type=int,
 )
 @click.option(
     "-e",
     "--email",
     help=const.HELP.ALIAS.CONTACT.CREATE.OPTION.EMAIL,
 )
+@util.pass_db_access
 @util.pass_simplelogin
 @util.authenticate
-def contact_create(sl, id: int, email: str) -> bool:
+def contact_create(sl, db, id: int, email: str) -> bool:
     """Create a new contact"""
+    id = util.resolve_id(db, Alias, id)
     success, obj = sl.create_contact(id, email)
     if not success:
         click.echo(obj)
@@ -543,7 +530,6 @@ def contact_create(sl, id: int, email: str) -> bool:
 )
 @click.argument(
     "id",
-    type=int,
 )
 @click.option(
     "-i",
@@ -555,15 +541,17 @@ def contact_create(sl, id: int, email: str) -> bool:
     "--exclude",
     help=const.HELP.ALIAS.CONTACT.LIST.OPTION.EXCLUDE,
 )
+@util.pass_db_access
 @util.pass_simplelogin
 @util.authenticate
-def contact_list(sl, id: int, include: str | None, exclude: str | None) -> None:
+def contact_list(sl, db, id: int, include: str | None, exclude: str | None) -> None:
     """List contacts in a tabular format"""
     fields = util.get_display_fields_from_options(
         const.CONTACT_FIELD_ORDER, include, exclude
     )
     if len(fields) == 0:
         return
+    id = util.resolve_id(db, Alias, id)
     contacts = sl.get_all_alias_contacts(id)
     if len(contacts) == 0:
         click.echo("No contacts found")

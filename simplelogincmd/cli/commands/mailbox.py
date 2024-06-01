@@ -12,6 +12,7 @@ Subcommands:
 import click
 
 from simplelogincmd.cli import const, util
+from simplelogincmd.database.models import Mailbox
 
 
 @click.group(
@@ -53,7 +54,9 @@ def create(sl, email: str) -> bool:
     help=const.HELP.MAILBOX.DELETE.LONG,
     epilog=const.HELP.MAILBOX.DELETE.EPILOG,
 )
-@click.argument("id")
+@click.argument(
+    "id",
+)
 @click.option(
     "-t",
     "--transfer-aliases-to",
@@ -70,9 +73,11 @@ def create(sl, email: str) -> bool:
     default=False,
     help=const.HELP.MAILBOX.DELETE.OPTION.YES,
 )
+@util.pass_db_access
 @util.pass_simplelogin
-def delete(sl, id: int, transfer_aliases_to: int, bypass_confirm: bool):
+def delete(sl, db, id: int, transfer_aliases_to: int, bypass_confirm: bool):
     """Delete a mailbox"""
+    id = util.resolve_id(db, Mailbox, id)
     if transfer_aliases_to == -1 and not bypass_confirm:
         click.confirm(
             "This will delete all of the mailbox's aliases. Are you sure?", abort=True
@@ -122,7 +127,9 @@ def list(sl, include: str, exclude: str) -> None:
     short_help=const.HELP.MAILBOX.UPDATE.SHORT,
     help=const.HELP.MAILBOX.UPDATE.LONG,
 )
-@click.argument("id")
+@click.argument(
+    "id",
+)
 @click.option(
     "-e",
     "--email",
@@ -140,14 +147,19 @@ def list(sl, include: str, exclude: str) -> None:
     default=None,
     help=const.HELP.MAILBOX.UPDATE.OPTION.CANCEL_EMAIL_CHANGE,
 )
+@util.pass_db_access
 @util.pass_simplelogin
+@util.authenticate
 def update(
     sl,
+    db,
     id: int,
     email: str | None,
     default: bool | None,
     cancel_email_change: bool | None,
 ) -> bool:
+    """Modify a mailbox's attributes"""
+    id = util.resolve_id(db, Mailbox, id)
     success, msg = sl.update_mailbox(id, email, default, Cancel_email_change)
     if not success:
         click.echo(msg)
