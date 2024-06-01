@@ -4,9 +4,11 @@ alias get
 .. code-block:: console
 
    Usage: simplelogin alias get [OPTIONS] ID
-   
-     View the alias with the given `ID`
-   
+
+     View the alias with the given ID. `ID` can be the alias's numeric id or, if
+     you have a local database, either its email address or note. In the latter
+     cases, if more than one alias matches, you will be prompted to choose one.
+
    Options:
      -i, --include TEXT  A comma-separated list of fields to include in the
                          resulting table. Only fields in this list will appear.

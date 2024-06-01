@@ -7,4 +7,5 @@ Here is a list of all the program's commands for easy navigation. Each links sim
 
    account/account
    alias/alias
+   database/database
    mailbox/mailbox
