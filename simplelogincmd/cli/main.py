@@ -4,24 +4,28 @@ CLI entrypoint
 
 import importlib.util
 from pkgutil import iter_modules
+from types import SimpleNamespace
 
 import click
 
 from simplelogincmd import config
-from simplelogincmd.cli import commands, const, util
+from simplelogincmd.cli import commands, const
+from simplelogincmd.database import DatabaseAccessLayer
+from simplelogincmd.rest import SimpleLogin
 
 
 @click.group(
     context_settings=const.CONTEXT_SETTINGS,
 )
 @click.version_option()
-@util.pass_db_access
-@util.pass_simplelogin
-def cli(sl, db):
+@click.pass_context
+def cli(context):
     """
     \f
     Application entrypoint
     """
+    sl = SimpleLogin()
+    db = DatabaseAccessLayer()
     config.ensure_directory()
     db.initialize()
     # Silently log in if an API key is saved. If no API key is found,
@@ -32,6 +36,10 @@ def cli(sl, db):
     api_key = cfg["API"].get("api_key", "")
     if api_key != "":
         sl.api_key = api_key
+    context.obj = SimpleNamespace(
+        sl=sl,
+        db=db,
+    )
 
 
 # Dynamically import and add any public Groups found in `commands` modules.

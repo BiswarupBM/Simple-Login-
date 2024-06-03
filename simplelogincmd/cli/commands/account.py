@@ -57,9 +57,10 @@ def account():
     hide_input=True,
     help=const.HELP.ACCOUNT.LOGIN.OPTION.PASSWORD,
 )
-@util.pass_simplelogin
-def login(sl, email: str, password: str) -> bool:
+@click.pass_obj
+def login(obj, email: str, password: str) -> bool:
     """Attempt to log in to SimpleLogin"""
+    sl = obj.sl
     success, msg = sl.login(email, password)
     if not success:
         click.echo(msg)
@@ -96,9 +97,10 @@ def login(sl, email: str, password: str) -> bool:
     hide_input=True,
     help=const.HELP.ACCOUNT.MFA.OPTION.MFA_KEY,
 )
-@util.pass_simplelogin
-def mfa(sl, mfa_token: str, mfa_key: str) -> bool:
+@click.pass_obj
+def mfa(obj, mfa_token: str, mfa_key: str) -> bool:
     """Attempt to pass MFA during login"""
+    sl = obj.sl
     success, msg = sl.mfa(mfa_token, mfa_key)
     if not success:
         click.echo(msg)
@@ -113,9 +115,10 @@ def mfa(sl, mfa_token: str, mfa_key: str) -> bool:
     short_help=const.HELP.ACCOUNT.LOGOUT.SHORT,
     help=const.HELP.ACCOUNT.LOGOUT.LONG,
 )
-@util.pass_simplelogin
+@click.pass_obj
 @util.authenticate
-def logout(sl) -> bool:
+def logout(obj) -> bool:
     """Log out of SimpleLogin"""
+    sl = obj.sl
     success = sl.logout()
     return success and _save_api_key("")

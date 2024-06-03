@@ -10,11 +10,6 @@ import click
 from simplelogincmd.cli.exceptions import NotLoggedInError
 from simplelogincmd.database import DatabaseAccessLayer
 from simplelogincmd.database.models import Object
-from simplelogincmd.rest import SimpleLogin
-
-
-pass_db_access = click.make_pass_decorator(DatabaseAccessLayer, ensure=True)
-pass_simplelogin = click.make_pass_decorator(SimpleLogin, ensure=True)
 
 
 def authenticate(f):
@@ -31,8 +26,8 @@ def authenticate(f):
     """
 
     @wraps(f)
-    def wrapper(sl, *args, **kwargs):
-        if not sl.is_authenticated():
+    def wrapper(obj, *args, **kwargs):
+        if not obj.sl.is_authenticated():
             from simplelogincmd.cli.commands.account import login
 
             email = click.prompt("Email")
@@ -42,7 +37,7 @@ def authenticate(f):
             if not success:
                 # Click will handle this gracefully by itself.
                 raise NotLoggedInError()
-        return f(sl, *args, **kwargs)
+        return f(obj, *args, **kwargs)
 
     return wrapper
 
