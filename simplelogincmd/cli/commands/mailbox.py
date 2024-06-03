@@ -67,7 +67,6 @@ def create(sl, email: str) -> bool:
     "delete",
     short_help=const.HELP.MAILBOX.DELETE.SHORT,
     help=const.HELP.MAILBOX.DELETE.LONG,
-    epilog=const.HELP.MAILBOX.DELETE.EPILOG,
 )
 @click.argument(
     "id",

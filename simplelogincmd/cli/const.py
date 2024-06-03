@@ -310,7 +310,6 @@ HELP = NS(
             SHORT="Delete an existing mailbox",
             LONG="Delete the mailbox with the given ID, optionally "
             f"transferring all its aliases to another mailbox. {_HELP_MAILBOX_ID}",
-            EPILOG="Note that SimpleLogin does not currently support " "this command.",
             OPTION=NS(
                 TRANSFER_ALIASES_TO="The ID of the mailbox which is "
                 "to take over the deleted mailbox's aliases. A value "
