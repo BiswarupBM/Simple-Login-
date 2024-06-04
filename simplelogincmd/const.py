@@ -11,10 +11,31 @@ APP_NAME = "SimpleLogin-CLI"
 
 DIR_ROOT = Path(__file__).parent.parent
 DIR_APPDATA = Path(get_app_dir(APP_NAME))
-FILE_CONFIG = DIR_APPDATA / "config.ini"
+FILE_CONFIG = DIR_APPDATA / "config.json"
 FILE_DB = DIR_APPDATA / "db.sqlite"
 
 
-CONFIG_DEFAULT = dict(
-    API=dict(),
-)
+CONFIG_SCHEMA = {
+    "title": "SimpleLogin-CLI Configuration",
+    "description": "The structure of an application config file for SimpleLogin-CLI",
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "type": "object",
+    "additionalProperties": False,
+    "properties": {
+        "api": {
+            "type": "object",
+            "additionalProperties": False,
+            "properties": {
+                "api-key": {
+                    "type": "string",
+                },
+            },
+        },
+    },
+}
+
+CONFIG_BASE = {
+    "api": {
+        "api-key": "",
+    },
+}
