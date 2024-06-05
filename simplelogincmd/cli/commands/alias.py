@@ -58,7 +58,7 @@ def alias():
 @util.authenticate
 def activity(obj, id: int, include: str | None, exclude: str | None) -> None:
     """Display alias activities in a tabular format"""
-    sl, db = obj.sl, obj.db
+    sl, db, cfg = obj.sl, obj.db, obj.cfg
     fields = util.get_display_fields_from_options(
         const.ACTIVITY_FIELD_ORDER, include, exclude
     )
@@ -69,7 +69,8 @@ def activity(obj, id: int, include: str | None, exclude: str | None) -> None:
     if len(activities) == 0:
         click.echo("No activities found")
         return
-    util.display_model_list(activities, fields)
+    pager_threshold = cfg.get("display.pager-threshold")
+    util.display_model_list(activities, fields, pager_threshold)
 
 
 @alias.command(
@@ -244,7 +245,7 @@ def get(obj, id: int, include: str | None, exclude: str | None) -> None:
         return None
     db.session.upsert(obj)
     db.session.commit()
-    util.display_model_list([obj], fields, use_pager=False)
+    util.display_model_list([obj], fields, pager_threshold=0)
 
 
 @alias.command(
@@ -328,7 +329,7 @@ def delete(obj, id: int, bypass_confirmation: bool) -> bool:
 @util.authenticate
 def list(obj, include: str | None, exclude: str | None, query: str | None) -> None:
     """Display aliases in a tabular format"""
-    sl, db = obj.sl, obj.db
+    sl, db, cfg = obj.sl, obj.db, obj.cfg
     fields = util.get_display_fields_from_options(
         const.ALIAS_FIELD_ORDER, include, exclude
     )
@@ -341,7 +342,8 @@ def list(obj, include: str | None, exclude: str | None, query: str | None) -> No
     for alias in aliases:
         db.session.upsert(alias)
     db.session.commit()
-    util.display_model_list(aliases, fields)
+    pager_threshold = cfg.get("display.pager-threshold")
+    util.display_model_list(aliases, fields, pager_threshold)
 
 
 @alias.command(
@@ -553,7 +555,7 @@ def contact_create(obj, id: int, email: str) -> bool:
 @util.authenticate
 def contact_list(obj, id: int, include: str | None, exclude: str | None) -> None:
     """List contacts in a tabular format"""
-    sl, db = obj.sl, obj.db
+    sl, db, cfg = obj.sl, obj.db, obj.cfg
     fields = util.get_display_fields_from_options(
         const.CONTACT_FIELD_ORDER, include, exclude
     )
@@ -567,7 +569,8 @@ def contact_list(obj, id: int, include: str | None, exclude: str | None) -> None
     for contact in contacts:
         db.session.upsert(contact)
     db.session.commit()
-    util.display_model_list(contacts, fields)
+    pager_threshold = cfg.get("display.pager-threshold")
+    util.display_model_list(contacts, fields, pager_threshold)
 
 
 alias.add_command(_contact)

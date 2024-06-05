@@ -68,7 +68,7 @@ def _generate_model_list(models: list[Object], fields: list[str]):
 def display_model_list(
     models: list[Object],
     fields: list[str],
-    use_pager: bool = True,
+    pager_threshold: int,
 ) -> None:
     """
     Print a simple table detailing each item to stdout
@@ -79,14 +79,19 @@ def display_model_list(
     :param fields: The field names to display for each item, in left-
         to-right order
     :type fields: list[str]
-    :param use_pager: Whether to display the table in a pager, for easier
-        viewing of long lists, defaults to True
-    :type use_pager: bool, optional
+    :param pager_threshold: Display the items via a pager if the output
+        consists of this many or more entries, including the heading.
+        A value of `0` indicates not to use the pager.
+    :type use_pager: int
 
     :rtype: None
     """
+    count = len(models)
+    if count == 0:
+        return
     table = _generate_model_list(models, fields)
-    if use_pager:
+    # +1 to account for the heading.
+    if 0 < pager_threshold <= count + 1:
         click.echo_via_pager(table)
         return
     for entry in table:

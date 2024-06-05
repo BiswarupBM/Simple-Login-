@@ -31,11 +31,24 @@ CONFIG_SCHEMA = {
                 },
             },
         },
+        "display": {
+            "type": "object",
+            "additionalProperties": False,
+            "properties": {
+                "pager-threshold": {
+                    "type": "integer",
+                    "minimum": 0,
+                },
+            },
+        },
     },
 }
 
 CONFIG_BASE = {
     "api": {
         "api-key": "",
+    },
+    "display": {
+        "pager-threshold": 20,
     },
 }
