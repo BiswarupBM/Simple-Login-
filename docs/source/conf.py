@@ -46,6 +46,10 @@ extensions = [
 
 
 intersphinx_mapping = dict(
+    jsonschema=(
+        "https://python-jsonschema.readthedocs.io/en/stable/",
+        None,
+    ),
     sqlalchemy=(
         "https://docs.sqlalchemy.org",
         "https://docs.sqlalchemy.org/en/20/objects.inv",

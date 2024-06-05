@@ -277,6 +277,15 @@ HELP = NS(
             ),
         ),
     ),
+    CONFIG=NS(
+        SHORT="Manage application configuration",
+        LONG="Display (or set to VALUE) the config option KEY",
+        EPILOG="Boolean options accept `true/false`, `on/off`, or `yes/no` as values",
+        OPTION=NS(
+            LIST="List all configuration options and exit",
+            RESTORE_DEFAULTS="Restore all settings to their default values " "and exit",
+        ),
+    ),
     DATABASE=NS(
         SHORT=None,
         LONG="Manage the local database",
