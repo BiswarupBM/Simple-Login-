@@ -7,6 +7,7 @@ Subcommands:
 import click
 
 from simplelogincmd.cli import const
+from simplelogincmd.cli.lazy_group import LazyGroup, cmd_path
 
 
 def _display_config_value(key, value):
@@ -38,6 +39,8 @@ def _list(context, param, value) -> None:
 
 @click.group(
     "config",
+    cls=LazyGroup,
+    cmd_path=cmd_path(__file__, "config"),
     invoke_without_command=True,
     short_help=const.HELP.CONFIG.SHORT,
     help=const.HELP.CONFIG.LONG,

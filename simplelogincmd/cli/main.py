@@ -2,19 +2,20 @@
 CLI entrypoint
 """
 
-import importlib.util
-from pkgutil import iter_modules
 from types import SimpleNamespace
 
 import click
 
-from simplelogincmd.cli import commands, const
+from simplelogincmd.cli import const
+from simplelogincmd.cli.lazy_group import LazyGroup, cmd_path
 from simplelogincmd.config import Config
 from simplelogincmd.database import DatabaseAccessLayer
 from simplelogincmd.rest import SimpleLogin
 
 
 @click.group(
+    cls=LazyGroup,
+    cmd_path=cmd_path(__file__, "commands"),
     context_settings=const.CONTEXT_SETTINGS,
 )
 @click.version_option()
@@ -40,18 +41,6 @@ def cli(context):
         sl=sl,
         db=db,
     )
-
-
-# Dynamically import and add any public Groups found in `commands` modules.
-commands_path = commands.__path__
-commands_prefix = f"{commands.__name__}."
-for finder, name, is_pkg in iter_modules(commands_path, commands_prefix):
-    spec = importlib.util.find_spec(name)
-    module = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(module)
-    for obj_name, obj in vars(module).items():
-        if not obj_name.startswith("_") and isinstance(obj, click.core.Group):
-            cli.add_command(obj)
 
 
 if __name__ == "__main__":
