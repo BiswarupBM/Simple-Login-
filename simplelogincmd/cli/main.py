@@ -7,7 +7,6 @@ from pkgutil import iter_modules
 from types import SimpleNamespace
 
 import click
-from trogon import tui
 
 from simplelogincmd.cli import commands, const
 from simplelogincmd.config import Config
@@ -15,7 +14,6 @@ from simplelogincmd.database import DatabaseAccessLayer
 from simplelogincmd.rest import SimpleLogin
 
 
-@tui(command="ui", help="Open terminal UI")
 @click.group(
     context_settings=const.CONTEXT_SETTINGS,
 )
