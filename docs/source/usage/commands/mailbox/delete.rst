@@ -23,5 +23,3 @@ mailbox delete
                                      flag to bypass a confirmation prompt. It has
                                      no effect if `-t` has another value.
      -h, --help                      Show this message and exit.
-
-     Note that SimpleLogin does not currently support this command.

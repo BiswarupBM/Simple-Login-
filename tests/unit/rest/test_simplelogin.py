@@ -1,13 +1,13 @@
 import pytest
 import responses
 
-from simplelogincmd.rest.exceptions import UnauthenticatedError
 from simplelogincmd.database.models import (
     Activity,
     Alias,
     Contact,
     Mailbox,
 )
+from simplelogincmd.rest.exceptions import UnauthenticatedError
 
 
 class TestAccountEndpoints:
@@ -91,7 +91,7 @@ class TestAccountEndpoints:
         self, sl_unauthenticated, resp_logout_failure
     ):
         responses.add(resp_logout_failure)
-        with pytest.raises(UnauthenticatedError) as error:
+        with pytest.raises(UnauthenticatedError):
             sl_unauthenticated.logout()
 
 

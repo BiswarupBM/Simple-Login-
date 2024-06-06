@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "simplelogincmd"
-version = "0.2.1"
+version = "0.3.0"
 description = "SimpleLogin command-line application"
 authors = ["truthless-dev <truthless.deviant248@simplelogin.fr>"]
 license = "MIT"
@@ -12,6 +12,8 @@ requests = "^2.32.2"
 click = "^8.1.7"
 sqlalchemy = "^2.0.30"
 sqlalchemy-utils = "^0.41.2"
+jsonschema = "^4.22.0"
+trogon = "^0.5.0"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.2.1"
@@ -19,9 +21,27 @@ responses = "^0.25.0"
 black = "^24.4.2"
 Sphinx = "^7.3.7"
 toml = "^0.10.2"
+pre-commit = "^3.7.1"
+isort = "^5.13.2"
+flake8 = "^7.0.0"
 
 [tool.poetry.scripts]
 simplelogin = "simplelogincmd.cli.main:cli"
+
+[tool.isort]
+profile = "black"
+atomic = true
+honor_noqa = true
+include_trailing_comma = true
+line_length = 88
+lines_after_imports = 2
+multi_line_output = 1
+only_modified = true
+remove_redundant_aliases = true
+skip_gitignore = true
+split_on_trailing_comma = true
+star_first = true
+use_parentheses = true
 
 [build-system]
 requires = ["poetry-core"]

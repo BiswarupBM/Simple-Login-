@@ -5,16 +5,16 @@ SimpleLogin object models
 from typing import Any
 
 from sqlalchemy import (
+    Select,
     inspect,
     select,
-    Select,
 )
 from sqlalchemy.exc import InvalidRequestError
 from sqlalchemy.orm import (
     DeclarativeBase,
     Mapped,
-    mapped_column,
     Session,
+    mapped_column,
 )
 
 
@@ -222,7 +222,7 @@ class Alias(LenientInit, Object):
         # to the user.
         # This will never cause problems for SQLAlchemy because it loads
         # objects from the DB via a different method.
-        if (mailboxes := kwargs.get("mailboxes")) is not None:
+        if (mailboxes := extras.get("mailboxes")) is not None:
             self.mailboxes = [Mailbox(**mailbox) for mailbox in mailboxes]
 
     def __str__(self) -> str:

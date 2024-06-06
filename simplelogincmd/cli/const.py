@@ -277,6 +277,15 @@ HELP = NS(
             ),
         ),
     ),
+    CONFIG=NS(
+        SHORT="Manage application configuration",
+        LONG="Display (or set to VALUE) the config option KEY",
+        EPILOG="Boolean options accept `true/false`, `on/off`, or `yes/no` as values",
+        OPTION=NS(
+            LIST="List all configuration options and exit",
+            RESTORE_DEFAULTS="Restore all settings to their default values " "and exit",
+        ),
+    ),
     DATABASE=NS(
         SHORT=None,
         LONG="Manage the local database",
@@ -310,7 +319,6 @@ HELP = NS(
             SHORT="Delete an existing mailbox",
             LONG="Delete the mailbox with the given ID, optionally "
             f"transferring all its aliases to another mailbox. {_HELP_MAILBOX_ID}",
-            EPILOG="Note that SimpleLogin does not currently support " "this command.",
             OPTION=NS(
                 TRANSFER_ALIASES_TO="The ID of the mailbox which is "
                 "to take over the deleted mailbox's aliases. A value "

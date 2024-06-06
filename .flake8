@@ -1,0 +1,6 @@
+[flake8]
+format = %(path)s:: %(row)d:%(col)d: %(code)s %(text)s
+max-line-length = 88
+per-file-ignores =
+    # Unused imports in __init__ files. Used sometimes to shorten imports elsewhere.
+    __init__.py:F401

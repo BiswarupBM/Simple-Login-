@@ -26,11 +26,11 @@ def group_db():
     help=const.HELP.DATABASE.SYNC.LONG,
     epilog=const.HELP.DATABASE.SYNC.EPILOG,
 )
-@util.pass_db_access
-@util.pass_simplelogin
+@click.pass_obj
 @util.authenticate
-def sync(sl, db):
+def sync(obj):
     """Populate the local db with SL's data"""
+    sl, db = obj.sl, obj.db
     objects = []
     click.echo("Retrieving mailboxes... ", nl=False)
     mailboxes = sl.get_mailboxes()
@@ -55,9 +55,10 @@ def sync(sl, db):
     short_help=const.HELP.DATABASE.DELETE.SHORT,
     help=const.HELP.DATABASE.DELETE.LONG,
 )
-@util.pass_db_access
-def delete(db) -> bool:
+@click.pass_obj
+def delete(obj) -> bool:
     """Delete the database"""
+    db = obj.db
     if not db.destroy():
         click.echo("Failed to delete database.")
         return False

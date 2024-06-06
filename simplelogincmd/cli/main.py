@@ -2,35 +2,46 @@
 CLI entrypoint
 """
 
-import click
 import importlib.util
 from pkgutil import iter_modules
+from types import SimpleNamespace
 
-from simplelogincmd import config
-from simplelogincmd.cli import commands, const, util
+import click
+from trogon import tui
+
+from simplelogincmd.cli import commands, const
+from simplelogincmd.config import Config
+from simplelogincmd.database import DatabaseAccessLayer
+from simplelogincmd.rest import SimpleLogin
 
 
+@tui(command="ui", help="Open terminal UI")
 @click.group(
     context_settings=const.CONTEXT_SETTINGS,
 )
 @click.version_option()
-@util.pass_db_access
-@util.pass_simplelogin
-def cli(sl, db):
+@click.pass_context
+def cli(context):
     """
     \f
     Application entrypoint
     """
-    config.ensure_directory()
+    cfg = Config()
+    sl = SimpleLogin()
+    db = DatabaseAccessLayer()
+    cfg.ensure_directory()
     db.initialize()
     # Silently log in if an API key is saved. If no API key is found,
     # don't prompt for credentials now because user may not be invoking
     # a command that requires authentication anyway. Later prompting
     # can be done via the `util.authenticate` command decorator.
-    cfg = config.load()
-    api_key = cfg["API"].get("api_key", "")
-    if api_key != "":
+    if (api_key := cfg.get("api.api-key")) != "":
         sl.api_key = api_key
+    context.obj = SimpleNamespace(
+        cfg=cfg,
+        sl=sl,
+        db=db,
+    )
 
 
 # Dynamically import and add any public Groups found in `commands` modules.

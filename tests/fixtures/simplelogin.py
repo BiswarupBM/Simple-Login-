@@ -305,7 +305,7 @@ def sl_contact_a():
         contact="marketing@example.com",
         creation_timestamp=1582284900,
         last_email_sent_timestamp=None,
-        reverse_alias="marketing at example.com <reply+bzvpazcdedcgcpztehxzgjgzmxskqa@sl.co>",
+        reverse_alias="marketing at example.com <reply+bzvpazcdedcgcpztehxzgjgzmxskqa@sl.co>",  # noqa: E501
         block_forward=False,
     )
 
@@ -317,7 +317,7 @@ def sl_contact_b():
         contact="newsletter@example.com",
         creation_timestamp=1582284900,
         last_email_sent_timestamp=1582284900,
-        reverse_alias="newsletter at example.com <reply+bzvpazcdedcgcpztehxzgjgzmxskqa@sl.co>",
+        reverse_alias="newsletter at example.com <reply+bzvpazcdedcgcpztehxzgjgzmxskqa@sl.co>",  # noqa: E501
         reverse_alias_address="reply+bzvpazcdedcgcpztehxzgjgzmxskqa@sl.co",
         block_forward=True,
     )

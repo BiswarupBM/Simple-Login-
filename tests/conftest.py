@@ -2,7 +2,6 @@ import importlib.util
 from pkgutil import iter_modules
 
 import pytest
-from responses import Response
 
 from simplelogincmd.rest import SimpleLogin
 

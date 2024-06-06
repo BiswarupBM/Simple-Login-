@@ -10,23 +10,7 @@ Subcommands:
 
 import click
 
-from simplelogincmd import config
 from simplelogincmd.cli import const, util
-
-
-def _save_api_key(api_key: str) -> bool:
-    """
-    Save the new api_key to disc
-
-    :param api_key: The api_key which SimpleLogin provides
-    :type api_key: str
-
-    :return: Whether the save is successful
-    :rtype: bool
-    """
-    cfg = config.load()
-    cfg["API"]["api_key"] = api_key
-    return config.save(cfg)
 
 
 @click.group(
@@ -57,9 +41,10 @@ def account():
     hide_input=True,
     help=const.HELP.ACCOUNT.LOGIN.OPTION.PASSWORD,
 )
-@util.pass_simplelogin
-def login(sl, email: str, password: str) -> bool:
+@click.pass_obj
+def login(obj, email: str, password: str) -> bool:
     """Attempt to log in to SimpleLogin"""
+    sl, cfg = obj.sl, obj.cfg
     success, msg = sl.login(email, password)
     if not success:
         click.echo(msg)
@@ -70,7 +55,10 @@ def login(sl, email: str, password: str) -> bool:
         context = click.get_current_context()
         return context.invoke(mfa, mfa_token=mfa_token, mfa_key=mfa_key)
     api_key = sl.api_key
-    _save_api_key(api_key)
+    if (error := cfg.set("api.api-key", api_key)) is not None:
+        click.echo(error)
+        return False
+    cfg.save()
     return True
 
 
@@ -96,15 +84,19 @@ def login(sl, email: str, password: str) -> bool:
     hide_input=True,
     help=const.HELP.ACCOUNT.MFA.OPTION.MFA_KEY,
 )
-@util.pass_simplelogin
-def mfa(sl, mfa_token: str, mfa_key: str) -> bool:
+@click.pass_obj
+def mfa(obj, mfa_token: str, mfa_key: str) -> bool:
     """Attempt to pass MFA during login"""
+    sl, cfg = obj.sl, obj.cfg
     success, msg = sl.mfa(mfa_token, mfa_key)
     if not success:
         click.echo(msg)
         return False
     api_key = sl.api_key
-    _save_api_key(api_key)
+    if (error := cfg.set("api.api-key", api_key)) is not None:
+        click.echo(error)
+        return False
+    cfg.save()
     return True
 
 
@@ -113,10 +105,14 @@ def mfa(sl, mfa_token: str, mfa_key: str) -> bool:
     short_help=const.HELP.ACCOUNT.LOGOUT.SHORT,
     help=const.HELP.ACCOUNT.LOGOUT.LONG,
 )
-@util.pass_simplelogin
+@click.pass_obj
 @util.authenticate
-def logout(sl) -> None:
+def logout(obj) -> bool:
     """Log out of SimpleLogin"""
+    sl, cfg = obj.sl, obj.cfg
     success = sl.logout()
-    if success:
-        click.echo("logged out")
+    if (error := cfg.set("api.api-key", "")) is not None:
+        click.echo(error)
+        return False
+    cfg.save()
+    return success

@@ -28,7 +28,7 @@ class TestUpsert:
 
     def test_merged_object_is_not_added_to_session(self, db_access, new_mailbox):
         assert new_mailbox not in db_access.session
-        obj = db_access.session.upsert(new_mailbox)
+        db_access.session.upsert(new_mailbox)
         assert new_mailbox not in db_access.session
 
     def test_new_object_persists_in_db(self, db_access, new_mailbox):
@@ -86,7 +86,7 @@ class TestUpsert:
     def test_modifications_to_existing_object_persist_in_db(self, db_access, mailbox):
         old_email = mailbox.email
         mailbox.email = f"modified_{mailbox.email}"
-        obj = db_access.session.upsert(mailbox)
+        db_access.session.upsert(mailbox)
         db_access.session.commit()
         selected = db_access.session.get(Mailbox, mailbox.id)
         assert selected is mailbox
@@ -97,7 +97,7 @@ class TestUpsert:
         self, db_access, new_mailbox, mailbox
     ):
         new_mailbox.email = mailbox.email
-        obj = db_access.session.upsert(new_mailbox)
+        db_access.session.upsert(new_mailbox)
         with pytest.raises(IntegrityError):
             db_access.session.commit()
 
@@ -106,6 +106,6 @@ class TestUpsert:
     ):
         new_mailbox.id = None
         new_mailbox.email = mailbox.email
-        obj = db_access.session.upsert(new_mailbox)
+        db_access.session.upsert(new_mailbox)
         with pytest.raises(IntegrityError):
             db_access.session.commit()

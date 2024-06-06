@@ -30,9 +30,7 @@ from simplelogincmd.database.models import (
     short_help=const.HELP.ALIAS.SHORT,
     help=const.HELP.ALIAS.LONG,
 )
-@util.pass_simplelogin
-@util.authenticate
-def alias(sl):
+def alias():
     """Alias commands"""
     pass
 
@@ -56,11 +54,11 @@ def alias(sl):
     "--exclude",
     help=const.HELP.ALIAS.ACTIVITY.OPTION.EXCLUDE,
 )
-@util.pass_db_access
-@util.pass_simplelogin
+@click.pass_obj
 @util.authenticate
-def activity(sl, db, id: int, include: str | None, exclude: str | None) -> None:
+def activity(obj, id: int, include: str | None, exclude: str | None) -> None:
     """Display alias activities in a tabular format"""
+    sl, db, cfg = obj.sl, obj.db, obj.cfg
     fields = util.get_display_fields_from_options(
         const.ACTIVITY_FIELD_ORDER, include, exclude
     )
@@ -71,7 +69,8 @@ def activity(sl, db, id: int, include: str | None, exclude: str | None) -> None:
     if len(activities) == 0:
         click.echo("No activities found")
         return
-    util.display_model_list(activities, fields)
+    pager_threshold = cfg.get("display.pager-threshold")
+    util.display_model_list(activities, fields, pager_threshold)
 
 
 @alias.command(
@@ -124,12 +123,10 @@ def activity(sl, db, id: int, include: str | None, exclude: str | None) -> None:
     default=False,
     help=const.HELP.ALIAS.CUSTOM.OPTION.YES,
 )
-@util.pass_db_access
-@util.pass_simplelogin
+@click.pass_obj
 @util.authenticate
 def custom(
-    sl,
-    db,
+    obj,
     hostname: str | None,
     prefix: str,
     mailboxes: tuple[str],
@@ -139,6 +136,7 @@ def custom(
     bypass_confirmation: bool,
 ) -> bool:
     """Create a new custom alias"""
+    sl, db = obj.sl, obj.db
     # Get suffix, recommendation, and other info before creating anything.
     success, data = sl.get_alias_options(hostname)
     if not success:
@@ -230,11 +228,11 @@ def custom(
     "--exclude",
     help=const.HELP.ALIAS.GET.OPTION.EXCLUDE,
 )
-@util.pass_db_access
-@util.pass_simplelogin
+@click.pass_obj
 @util.authenticate
-def get(sl, db, id: int, include: str | None, exclude: str | None) -> None:
+def get(obj, id: int, include: str | None, exclude: str | None) -> None:
     """Display a single alias in a tabular format"""
+    sl, db = obj.sl, obj.db
     fields = util.get_display_fields_from_options(
         const.ALIAS_FIELD_ORDER, include, exclude
     )
@@ -247,7 +245,7 @@ def get(sl, db, id: int, include: str | None, exclude: str | None) -> None:
         return None
     db.session.upsert(obj)
     db.session.commit()
-    util.display_model_list([obj], fields, use_pager=False)
+    util.display_model_list([obj], fields, pager_threshold=0)
 
 
 @alias.command(
@@ -267,11 +265,11 @@ def get(sl, db, id: int, include: str | None, exclude: str | None) -> None:
     default=False,
     help=const.HELP.ALIAS.DELETE.OPTION.YES,
 )
-@util.pass_db_access
-@util.pass_simplelogin
+@click.pass_obj
 @util.authenticate
-def delete(sl, db, id: int, bypass_confirmation: bool) -> bool:
+def delete(obj, id: int, bypass_confirmation: bool) -> bool:
     """Delete an alias"""
+    sl, db = obj.sl, obj.db
     id = util.resolve_id(db, Alias, id)
     if not bypass_confirmation:
         success, obj = sl.get_alias(id)
@@ -327,10 +325,11 @@ def delete(sl, db, id: int, bypass_confirmation: bool) -> bool:
     flag_value="disabled",
     help=const.HELP.ALIAS.LIST.OPTION.DISABLED,
 )
-@util.pass_db_access
-@util.pass_simplelogin
-def list(sl, db, include: str | None, exclude: str | None, query: str | None) -> None:
+@click.pass_obj
+@util.authenticate
+def list(obj, include: str | None, exclude: str | None, query: str | None) -> None:
     """Display aliases in a tabular format"""
+    sl, db, cfg = obj.sl, obj.db, obj.cfg
     fields = util.get_display_fields_from_options(
         const.ALIAS_FIELD_ORDER, include, exclude
     )
@@ -343,7 +342,8 @@ def list(sl, db, include: str | None, exclude: str | None, query: str | None) ->
     for alias in aliases:
         db.session.upsert(alias)
     db.session.commit()
-    util.display_model_list(aliases, fields)
+    pager_threshold = cfg.get("display.pager-threshold")
+    util.display_model_list(aliases, fields, pager_threshold)
 
 
 @alias.command(
@@ -378,17 +378,16 @@ def list(sl, db, include: str | None, exclude: str | None, query: str | None) ->
     flag_value="_EDIT",
     help=const.HELP.ALIAS.RANDOM.OPTION.NOTE,
 )
-@util.pass_db_access
-@util.pass_simplelogin
+@click.pass_obj
 @util.authenticate
 def random(
-    sl,
-    db,
+    obj,
     hostname: str | None,
     mode: str | None,
     note: str | None,
 ) -> bool:
     """Create a new random alias"""
+    sl, db = obj.sl, obj.db
     if note == "_EDIT":
         note = util.edit()
     success, obj = sl.create_random_alias(hostname, mode, note)
@@ -409,11 +408,11 @@ def random(
 @click.argument(
     "id",
 )
-@util.pass_db_access
-@util.pass_simplelogin
+@click.pass_obj
 @util.authenticate
-def toggle(sl, db, id: int) -> bool:
+def toggle(obj, id: int) -> bool:
     """Enable or disable an alias"""
+    sl, db = obj.sl, obj.db
     id = util.resolve_id(db, Alias, id)
     success, result = sl.toggle_alias(id)
     if not success:
@@ -463,12 +462,10 @@ def toggle(sl, db, id: int) -> bool:
     default=None,
     help=const.HELP.ALIAS.UPDATE.OPTION.PINNED,
 )
-@util.pass_db_access
-@util.pass_simplelogin
+@click.pass_obj
 @util.authenticate
 def update(
-    sl,
-    db,
+    obj,
     id: int,
     note: str | None,
     name: str | None,
@@ -477,6 +474,7 @@ def update(
     pinned: bool | None,
 ) -> bool:
     """Modify an alias's fields"""
+    sl, db = obj.sl, obj.db
     id = util.resolve_id(db, Alias, id)
     mailbox_ids = {util.resolve_id(db, Mailbox, mb_id) for mb_id in mailboxes}
     if note == "_EDIT":
@@ -500,9 +498,7 @@ def update(
     short_help=const.HELP.ALIAS.CONTACT.SHORT,
     help=const.HELP.ALIAS.CONTACT.LONG,
 )
-@util.pass_simplelogin
-@util.authenticate
-def _contact(sl):
+def _contact():
     """Contact commands"""
     pass
 
@@ -520,11 +516,11 @@ def _contact(sl):
     "--email",
     help=const.HELP.ALIAS.CONTACT.CREATE.OPTION.EMAIL,
 )
-@util.pass_db_access
-@util.pass_simplelogin
+@click.pass_obj
 @util.authenticate
-def contact_create(sl, db, id: int, email: str) -> bool:
+def contact_create(obj, id: int, email: str) -> bool:
     """Create a new contact"""
+    sl, db = obj.sl, obj.db
     id = util.resolve_id(db, Alias, id)
     success, obj = sl.create_contact(id, email)
     if not success:
@@ -555,11 +551,11 @@ def contact_create(sl, db, id: int, email: str) -> bool:
     "--exclude",
     help=const.HELP.ALIAS.CONTACT.LIST.OPTION.EXCLUDE,
 )
-@util.pass_db_access
-@util.pass_simplelogin
+@click.pass_obj
 @util.authenticate
-def contact_list(sl, db, id: int, include: str | None, exclude: str | None) -> None:
+def contact_list(obj, id: int, include: str | None, exclude: str | None) -> None:
     """List contacts in a tabular format"""
+    sl, db, cfg = obj.sl, obj.db, obj.cfg
     fields = util.get_display_fields_from_options(
         const.CONTACT_FIELD_ORDER, include, exclude
     )
@@ -573,7 +569,8 @@ def contact_list(sl, db, id: int, include: str | None, exclude: str | None) -> N
     for contact in contacts:
         db.session.upsert(contact)
     db.session.commit()
-    util.display_model_list(contacts, fields)
+    pager_threshold = cfg.get("display.pager-threshold")
+    util.display_model_list(contacts, fields, pager_threshold)
 
 
 alias.add_command(_contact)
