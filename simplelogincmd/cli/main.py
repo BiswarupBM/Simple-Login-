@@ -8,8 +8,8 @@ from types import SimpleNamespace
 
 import click
 
-from simplelogincmd import config
 from simplelogincmd.cli import commands, const
+from simplelogincmd.config import Config
 from simplelogincmd.database import DatabaseAccessLayer
 from simplelogincmd.rest import SimpleLogin
 
@@ -24,19 +24,19 @@ def cli(context):
     \f
     Application entrypoint
     """
+    cfg = Config()
     sl = SimpleLogin()
     db = DatabaseAccessLayer()
-    config.ensure_directory()
+    cfg.ensure_directory()
     db.initialize()
     # Silently log in if an API key is saved. If no API key is found,
     # don't prompt for credentials now because user may not be invoking
     # a command that requires authentication anyway. Later prompting
     # can be done via the `util.authenticate` command decorator.
-    cfg = config.load()
-    api_key = cfg["API"].get("api_key", "")
-    if api_key != "":
+    if (api_key := cfg.get("api.api-key")) != "":
         sl.api_key = api_key
     context.obj = SimpleNamespace(
+        cfg=cfg,
         sl=sl,
         db=db,
     )

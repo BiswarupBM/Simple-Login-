@@ -137,7 +137,7 @@ def list(obj, include: str, exclude: str) -> None:
     for mailbox in mailboxes:
         db.session.upsert(mailbox)
     db.session.commit()
-    util.display_model_list(mailboxes, fields)
+    util.display_model_list(mailboxes, fields, pager_threshold=0)
 
 
 @mailbox.command(
