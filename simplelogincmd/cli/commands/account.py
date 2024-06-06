@@ -17,7 +17,7 @@ from simplelogincmd.cli.lazy_group import LazyGroup, cmd_path
 @click.group(
     "account",
     cls=LazyGroup,
-    cmd_path=cmd_path(__file__, "account"),
+    cmd_path=cmd_path(__file__, "account_commands"),
     short_help=const.HELP.ACCOUNT.SHORT,
     help=const.HELP.ACCOUNT.LONG,
 )

@@ -18,7 +18,7 @@ from simplelogincmd.cli.lazy_group import LazyGroup, cmd_path
 @click.group(
     "mailbox",
     cls=LazyGroup,
-    cmd_path=cmd_path(__file__, "mailbox"),
+    cmd_path=cmd_path(__file__, "mailbox_commands"),
     short_help=const.HELP.MAILBOX.SHORT,
     help=const.HELP.MAILBOX.LONG,
 )

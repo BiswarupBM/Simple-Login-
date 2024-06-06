@@ -2,44 +2,78 @@
 CLI application utilities
 """
 
-from functools import wraps
 from typing import Any, Type
 
 import click
 
 from simplelogincmd.cli.exceptions import NotLoggedInError
+from simplelogincmd.config import Config
 from simplelogincmd.database import DatabaseAccessLayer
 from simplelogincmd.database.models import Object
+from simplelogincmd.rest import SimpleLogin
 
 
-def authenticate(f):
+def init_cfg() -> Config:
     """
-    Prompt the user to login if not already authenticated
+    Initialize application configuration
 
-    :param f: The function/method which requires the user be logged in
-    :type f: Callable
+    :raise jsonschema.SchemaError: If the app's configuration schema
+        is invalid
+    :raise jsonschema.ValidationError: If the app's base configuration
+        fails validation
 
-    :raise NotLoggedInError: If the user fails to log in
-
-    :return: Decorated function
-    :rtype: Callable
+    :return: Application configuration
+    :rtype: :class:`Config`
     """
+    return Config()
 
-    @wraps(f)
-    def wrapper(obj, *args, **kwargs):
-        if not obj.sl.is_authenticated():
-            from simplelogincmd.cli.commands.account import login
 
-            email = click.prompt("Email")
-            password = click.prompt("Password", hide_input=True)
-            context = click.get_current_context()
-            success = context.invoke(login, email=email, password=password)
-            if not success:
-                # Click will handle this gracefully by itself.
-                raise NotLoggedInError()
-        return f(obj, *args, **kwargs)
+def init_sl(cfg: Config) -> SimpleLogin:
+    """
+    Initialize a SimpleLogin client
 
-    return wrapper
+    The client is automatically logged in if an API key exists in the
+    given configuration. If not, the user is prompted to log in.
+
+    :param config: The application configuration used to configure
+        this client
+    :type config: :class:`Config`
+
+    :raise NotLoggedInError: If the user fails authentication
+
+    :return: The configured SimpleLogin client, ready to make requests
+    :rtype: :class:`SimpleLogin`
+    """
+    sl = SimpleLogin()
+    if api_key := cfg.get("api.api-key"):
+        sl.api_key = api_key
+        return sl
+    from simplelogincmd.cli.commands.account.login import login
+
+    context = click.get_current_context()
+    email = click.prompt("Email")
+    password = click.prompt("Password", hide_input=True)
+    context.obj = sl
+    success = context.invoke(login, email=email, password=password)
+    if not success:
+        raise NotLoggedInError()
+    return sl
+
+
+def init_db(config: Config) -> DatabaseAccessLayer:
+    """
+    Initialize the database
+
+    :param config: The Application configuration used to configure
+        the db
+    :type config: :class:`Config`
+
+    :rtype: :class:`DatabaseAccessLayer`
+    """
+    db = DatabaseAccessLayer()
+    config.ensure_directory()
+    db.initialize()
+    return db
 
 
 def _generate_model_list(models: list[Object], fields: list[str]):
