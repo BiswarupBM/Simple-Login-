@@ -10,3 +10,4 @@ Here is a list of all the program's commands for easy navigation. Each links sim
    config/config
    database/database
    mailbox/mailbox
+   ui/ui
