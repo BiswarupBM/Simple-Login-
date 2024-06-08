@@ -1,11 +1,11 @@
 import click
 
-from simplelogincmd.cli import util
+from simplelogincmd.cli.util import init
 
 
 def _delete():
-    cfg = util.init_cfg()
-    db = util.init_db(cfg)
+    cfg = init.cfg()
+    db = init.db(cfg)
     if not db.destroy():
         click.echo("Failed to delete database.")
         return False

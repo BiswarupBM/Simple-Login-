@@ -1,14 +1,14 @@
 import click
 
-from simplelogincmd.cli import util
+from simplelogincmd.cli.util import init, input
 from simplelogincmd.database.models import Alias
 
 
 def _toggle(id):
-    cfg = util.init_cfg()
-    sl = util.init_sl(cfg)
-    db = util.init_db(cfg)
-    id = util.resolve_id(db, Alias, id)
+    cfg = init.cfg()
+    sl = init.sl(cfg)
+    db = init.db(cfg)
+    id = input.resolve_id(db, Alias, id)
     success, result = sl.toggle_alias(id)
     if not success:
         click.echo(result)

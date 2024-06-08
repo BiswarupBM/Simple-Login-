@@ -1,14 +1,14 @@
 import click
 
-from simplelogincmd.cli import util
+from simplelogincmd.cli.util import init, input
 
 
 def _random(hostname, mode, note):
-    cfg = util.init_cfg()
-    sl = util.init_sl(cfg)
-    db = util.init_db(cfg)
+    cfg = init.cfg()
+    sl = init.sl(cfg)
+    db = init.db(cfg)
     if note == "_EDIT":
-        note = util.edit()
+        note = input.edit()
     success, obj = sl.create_random_alias(hostname, mode, note)
     if not success:
         click.echo(obj)

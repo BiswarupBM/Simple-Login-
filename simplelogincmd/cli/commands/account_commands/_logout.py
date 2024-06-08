@@ -1,11 +1,11 @@
 import click
 
-from simplelogincmd.cli import util
+from simplelogincmd.cli.util import init
 
 
 def _logout():
-    cfg = util.init_cfg()
-    sl = util.init_sl(cfg)
+    cfg = init.cfg()
+    sl = init.sl(cfg)
     success = sl.logout()
     if (error := cfg.set("api.api-key", "")) is not None:
         click.echo(error)

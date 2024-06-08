@@ -1,6 +1,6 @@
 import click
 
-from simplelogincmd.cli import util
+from simplelogincmd.cli.util import init
 
 
 def _display_config_value(key, value):
@@ -11,14 +11,14 @@ def _display_config_value(key, value):
 
 
 def _restore_defaults(context, param, value):
-    cfg = util.init_cfg()
+    cfg = init.cfg()
     cfg.restore()
     cfg.save()
     context.exit()
 
 
 def _list_configs(context, param, value) -> None:
-    cfg = util.init_cfg()
+    cfg = init.cfg()
     all = cfg.all()
     for k, v in all.items():
         _display_config_value(k, v)
@@ -26,7 +26,7 @@ def _list_configs(context, param, value) -> None:
 
 
 def _config(key, value):
-    cfg = util.init_cfg()
+    cfg = init.cfg()
     key = key.lower()
     try:
         current = cfg.get(key)

@@ -1,6 +1,6 @@
 import click
 
-from simplelogincmd.cli import util
+from simplelogincmd.cli.util import init
 from simplelogincmd.rest import SimpleLogin
 
 
@@ -19,7 +19,7 @@ def _login(email, password):
         context = click.get_current_context()
         return context.invoke(mfa, mfa_token=mfa_token, mfa_key=mfa_key)
 
-    cfg = util.init_cfg()
+    cfg = init.cfg()
     api_key = sl.api_key
     if (error := cfg.set("api.api-key", api_key)) is not None:
         click.echo(error)

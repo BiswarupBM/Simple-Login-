@@ -1,17 +1,18 @@
 import click
 
-from simplelogincmd.cli import const, util
+from simplelogincmd.cli import const
+from simplelogincmd.cli.util import init, output
 
 
 def _list(include, exclude, query):
-    fields = util.get_display_fields_from_options(
+    fields = output.get_display_fields_from_options(
         const.ALIAS_FIELD_ORDER, include, exclude
     )
     if len(fields) == 0:
         return
-    cfg = util.init_cfg()
-    sl = util.init_sl(cfg)
-    db = util.init_db(cfg)
+    cfg = init.cfg()
+    sl = init.sl(cfg)
+    db = init.db(cfg)
     aliases = sl.get_all_aliases(query)
     if len(aliases) == 0:
         click.echo("No aliases found.")
@@ -20,4 +21,4 @@ def _list(include, exclude, query):
         db.session.upsert(alias)
     db.session.commit()
     pager_threshold = cfg.get("display.pager-threshold")
-    util.display_model_list(aliases, fields, pager_threshold)
+    output.display_model_list(aliases, fields, pager_threshold)

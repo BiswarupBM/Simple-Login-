@@ -1,4 +1,5 @@
-from simplelogincmd.cli import const, util
+from simplelogincmd.cli import const
+from simplelogincmd.cli.util import init, output
 from simplelogincmd.database.models import Mailbox
 
 
@@ -18,19 +19,19 @@ def _mailbox_sort_key(mailbox: Mailbox) -> tuple[int, str]:
 
 
 def _list(include, exclude):
-    fields = util.get_display_fields_from_options(
+    fields = output.get_display_fields_from_options(
         const.MAILBOX_FIELD_ORDER, include, exclude
     )
     if len(fields) == 0:
         return
-    cfg = util.init_cfg()
-    sl = util.init_sl(cfg)
+    cfg = init.cfg()
+    sl = init.sl(cfg)
     mailboxes = sl.get_mailboxes()
     if len(mailboxes) == 0:
         return
     mailboxes.sort(key=_mailbox_sort_key)
-    db = util.init_db(cfg)
+    db = init.db(cfg)
     for mailbox in mailboxes:
         db.session.upsert(mailbox)
     db.session.commit()
-    util.display_model_list(mailboxes, fields, pager_threshold=0)
+    output.display_model_list(mailboxes, fields, pager_threshold=0)

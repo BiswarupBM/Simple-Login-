@@ -1,11 +1,11 @@
 import click
 
-from simplelogincmd.cli import util
+from simplelogincmd.cli.util import init
 
 
 def _create(email):
-    cfg = util.init_cfg()
-    sl = util.init_sl(cfg)
+    cfg = init.cfg()
+    sl = init.sl(cfg)
     success, msg = sl.create_mailbox(email)
     if not success:
         click.echo(msg)

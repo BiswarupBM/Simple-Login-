@@ -5,15 +5,15 @@ from simplelogincmd.database.models import Alias
 
 
 def _list(id, include, exclude):
-    fields = util.get_display_fields_from_options(
+    fields = util.output.get_display_fields_from_options(
         const.CONTACT_FIELD_ORDER, include, exclude
     )
     if len(fields) == 0:
         return
-    cfg = util.init_cfg()
-    sl = util.init_sl(cfg)
-    db = util.init_db(cfg)
-    id = util.resolve_id(db, Alias, id)
+    cfg = util.init.cfg()
+    sl = util.init.sl(cfg)
+    db = util.init.db(cfg)
+    id = util.input.resolve_id(db, Alias, id)
     contacts = sl.get_all_alias_contacts(id)
     if len(contacts) == 0:
         click.echo("No contacts found")
@@ -22,4 +22,4 @@ def _list(id, include, exclude):
         db.session.upsert(contact)
     db.session.commit()
     pager_threshold = cfg.get("display.pager-threshold")
-    util.display_model_list(contacts, fields, pager_threshold)
+    util.output.display_model_list(contacts, fields, pager_threshold)

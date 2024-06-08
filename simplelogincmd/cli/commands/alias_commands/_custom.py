@@ -1,6 +1,6 @@
 import click
 
-from simplelogincmd.cli import util
+from simplelogincmd.cli.util import init, input
 from simplelogincmd.database.models import Mailbox
 
 
@@ -13,9 +13,9 @@ def _custom(
     select_suffix,
     bypass_confirmation,
 ):
-    cfg = util.init_cfg()
-    sl = util.init_sl(cfg)
-    db = util.init_db(cfg)
+    cfg = init.cfg()
+    sl = init.sl(cfg)
+    db = init.db(cfg)
     # Get suffix, recommendation, and other info before creating anything.
     success, data = sl.get_alias_options(hostname)
     if not success:
@@ -35,9 +35,9 @@ def _custom(
         if not bypass_confirmation:
             click.confirm("Create a new alias anyway?", abort=True)
 
-    mailbox_ids = {util.resolve_id(db, Mailbox, mb_id) for mb_id in mailboxes}
+    mailbox_ids = {input.resolve_id(db, Mailbox, mb_id) for mb_id in mailboxes}
     if note == "_EDIT":
-        note = util.edit()
+        note = input.edit()
 
     # If `select_suffix` is not set or out of range, prompt the user
     # for which suffix to use.
@@ -46,7 +46,7 @@ def _custom(
         return False
     if select_suffix is None or not (0 <= select_suffix < len(suffixes)):
         options = [suffix["suffix"] for suffix in suffixes]
-        suffix_index = util.prompt_choice("Choose a suffix", options)
+        suffix_index = input.prompt_choice("Choose a suffix", options)
     else:
         suffix_index = select_suffix
     suffix = suffixes[suffix_index].get("suffix")
